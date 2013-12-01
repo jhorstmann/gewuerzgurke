@@ -1,0 +1,10 @@
+body {
+    padding-top: 50px;
+}
+.template {
+    padding: 40px 15px;
+}
+.step-type {
+    width: 6em;
+    text-align: right;
+}
