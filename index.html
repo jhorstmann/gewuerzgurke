@@ -15,15 +15,34 @@
     <script type="text/javascript">
         angular.module('gewuerzgurke', ['ui.bootstrap'])
                 .controller('StepController', function StepController($scope) {
-                    $scope.givenTypeahead = ['a customer', 'an order'];
+                    $scope.givenTypeahead = ['a customer', 'an order', 'the customer wants to pay with $1'];
                     $scope.whenTypeahead = ['the customer checks out', 'the customer commits the order', 'the customer cancels the order'];
                     $scope.thenTypeahead = ['the order is saved', 'the stock is reversed', 'the coupon is invalidated', 'the credit account is reserved'];
-                    $scope.givenSteps = ['a customer', 'an order'];
+                    $scope.givenSteps = ['a customer'];
                     $scope.whenSteps = [];
                     $scope.thenSteps = [];
                     $scope.newGiven = undefined;
                     $scope.newWhen = undefined;
                     $scope.newThen = undefined;
+                    $scope.outline = false;
+
+                    $scope.getParameters = function getParameters(step) {
+                        if (/\$\d+/.test(step)
+                                )
+                    }
+
+                    $scope.hasGivenSteps = function hasGivenSteps() {
+                        return $scope.givenSteps.length > 0;
+                    }
+                    $scope.addGiven = function addGiven() {
+                        if ($scope.newGiven) {
+                            $scope.givenSteps.push($scope.newGiven);
+                            $scope.newGiven = undefined;
+                        }
+                    }
+                    $scope.removeGiven = function removeGiven(index) {
+                        $scope.givenSteps.splice(index, 1);
+                    }
 
                     $scope.hasWhenSteps = function hasWhenSteps() {
                         return $scope.whenSteps.length > 0;
@@ -67,9 +86,8 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
+                <li class="active"><a href="#">Create Scenario</a></li>
                 <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
@@ -77,72 +95,120 @@
 </div>
 <div class="container">
     <div class="template">
-        <div ng-controller="StepController">
-            <div ng-repeat="step in givenSteps">
-                <div class="input-group">
-                     <span class="input-group-btn">
-                         <button type="button" class="btn btn-primary step-type">
-                             <span ng-show="$first">Given</span>
-                             <span ng-show="!$first">And</span>
-                             &times;
-                         </button>
-                     </span>
-                    <input type="text" value="{{step}}" class="form-control">
-                </div>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary dropdown-toggle" toggle="dropdown">
+                        {{outline && 'Scenario outline' || 'Scenario'}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" ng-click="outline = false">Scenario</a></li>
+                        <li><a href="#" ng-click="outline = true">Scenario Outline</a></li>
+                    </ul>
+                </span>
+                <input type="text" class="form-control" placeholder="Scenario description"></h3>
             </div>
-            <div ng-repeat="step in whenSteps">
-                <div class="input-group">
-                     <span class="input-group-btn">
-                         <button type="button" class="btn btn-warning step-type" ng-click="removeWhen($index)">
-                             <span ng-show="$first">When</span>
-                             <span ng-show="!$first">And</span>
-                             &times;
-                         </button>
-                     </span>
-                    <input type="text" value="{{step}}" class="form-control">
-                </div>
-            </div>
-            <div>
+        <div class="scenario">
 
-                <div class="input-group">
+            <div ng-controller="StepController">
+                <div ng-repeat="step in givenSteps">
+                    <div class="input-group">
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-warning step-type" ng-click="addWhen()">
-                            <span ng-show="!hasWhenSteps()">When</span>
-                            <span ng-show="hasWhenSteps()">And</span>
-                            &plus;
-                        </button>
+                        <input type="button" class="btn btn-primary step-type"
+                               ng-click="removeGiven($index)"
+                               value="{{$first && 'Given' || 'And'}} &times;">
                     </span>
-                    <input type="text" ng-model="newWhen" typeahead="step for step in whenTypeahead"
-                           typeahead-min-length="0"
-                           class="form-control">
+                        <input type="text" value="{{step}}" class="form-control" readonly>
+                    </div>
                 </div>
-            </div>
-            <div ng-repeat="step in thenSteps">
-                <div class="input-group">
-                     <span class="input-group-btn">
-                         <button type="button" class="btn btn-info step-type" ng-click="removeThen($index)">
-                             <span ng-show="$first">Then</span>
-                             <span ng-show="!$first">And</span>
-                             &times;
-                         </button>
-                     </span>
+                <div>
+                    <div class="input-group">
+                    <span class="input-group-btn">
+                            <input type="button" class="btn btn-primary step-type"
+                                   value="{{!hasGivenSteps() && 'Given' || 'And'}} &plus;">
+                    </span>
+                        <input type="text" ng-model="newGiven"
+                               typeahead="step for step in givenTypeahead"
+                               typeahead-on-select="addGiven()"
+                               typeahead-min-length="0"
+                               class="form-control">
+                    </div>
+                </div>
 
-                    <input type="text" value="{{step}}" class="form-control">
+                <div ng-repeat="step in whenSteps">
+                    <div class="input-group">
+                <span class="input-group-btn">
+                    <input type="button" class="btn btn-warning step-type"
+                           ng-click="removeWhen($index)"
+                           value="{{$first && 'When' || 'And'}} &times;">
+                </span>
+                        <input type="text" value="{{step}}" class="form-control" readonly>
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group">
+                <span class="input-group-btn">
+                    <input type="button" class="btn btn-warning step-type"
+                           value="{{!hasWhenSteps() && 'When' || 'And'}} &plus;">
+                </span>
+                        <input type="text" ng-model="newWhen"
+                               typeahead="step for step in whenTypeahead"
+                               typeahead-on-select="addWhen()"
+                               typeahead-min-length="0"
+                               class="form-control">
+                    </div>
+                </div>
+
+                <div ng-repeat="step in thenSteps">
+                    <div class="input-group">
+                    <span class="input-group-btn">
+                        <input type="button" class="btn btn-info step-type"
+                               ng-click="removeThen($index)"
+                               value="{{$first && 'Then' || 'And'}} &times;">
+                    </span>
+
+                        <input type="text" value="{{step}}" class="form-control" readonly>
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group">
+                    <span class="input-group-btn">
+                        <input type="button" class="btn btn-info step-type"
+                               value="{{!hasThenSteps() && 'Then' || 'And'}} &plus;">
+                    </span>
+                        <input type="text" ng-model="newThen"
+                               typeahead="step for step in thenTypeahead"
+                               typeahead-on-select="addThen()"
+                               typeahead-min-length="0"
+                               class="form-control">
+                    </div>
                 </div>
             </div>
-            <div>
-                <div class="input-group">
-                    <span class="input-group-btn">
-                        <button type="button" class="btn btn-info step-type" ng-click="addThen()">
-                            <span ng-show="!hasThenSteps()">Then</span>
-                            <span ng-show="hasThenSteps()">And</span>
-                            &plus;
-                        </button>
-                    </span>
-                    <input type="text" ng-model="newThen" typeahead="step for step in thenTypeahead"
-                           typeahead-min-length="0"
-                           class="form-control">
-                </div>
+            <div class="examples" ng-show="outline">
+                <h3>Examples:</h3>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>App Domain</th>
+                        <th>Payment Method</th>
+                        <th>Shipping Country</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Invoice</td>
+                        <td>DE</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>PayPal</td>
+                        <td>DE</td>
+                    </tr>
+                    </tbody>
+
+                </table>
             </div>
         </div>
     </div>
