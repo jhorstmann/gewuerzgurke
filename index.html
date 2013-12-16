@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="bootstrap-3.0.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="bootstrap-3.0.2/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="template.css">
-    <script src="bootstrap-3.0.2/js/bootstrap.min.js"></script>
 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
-    <script type="text/javascript" src="ui-bootstrap-tpls-0.7.0.min.js"></script>
+    <script src="jquery-2.0.2/jquery.min.js"></script>
+    <script src="angularjs-1.2.3/angular.min.js"></script>
+    <script src="bootstrap-3.0.2/js/bootstrap.min.js"></script>
+    <script src="ui-bootstrap-0.7.0/ui-bootstrap-tpls-0.7.0.min.js"></script>
     <script type="text/javascript">
         angular.module('gewuerzgurke', ['ui.bootstrap'])
                 .controller('StepController', function StepController($scope) {
@@ -25,7 +25,6 @@
                     $scope.newWhen = undefined;
                     $scope.newThen = undefined;
                     $scope.outline = false;
-
 
                     $scope.hasGivenSteps = function hasGivenSteps() {
                         return $scope.givenSteps.length > 0;
